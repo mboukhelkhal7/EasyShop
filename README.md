@@ -25,7 +25,7 @@ The project uses **MySQL** for data storage and **JWT authentication** for secur
 ### ⭐ Optional Features
 - [x] Shopping Cart (persistent, per user)
 - [x] PUT endpoint to update cart item quantity
-- [ ] User Profile: view and update profile
+- [x] User Profile: view and update profile
 - [ ] Checkout: convert cart to order and clear cart
 
 ---
@@ -53,9 +53,46 @@ The project uses **MySQL** for data storage and **JWT authentication** for secur
 ### 🧪 Database Setup
 1. Open and execute the script `create_database.sql` in MySQL Workbench.
 2. Default users:
-    - `admin` / `password`
-    - `user` / `password`
+   - `admin` / `password`
+   - `user` / `password`
 
 ### 🚀 Run the Application
 ```bash
 mvn spring-boot:run
+```
+
+---
+
+## 📌 Interesting Code – `ProfileController`
+
+This controller demonstrates secure access to view and update a user's profile using Spring Security's `Principal`. It ensures that the authenticated user can only access their own data.
+
+```java
+@GetMapping
+public ProfileDTO getProfile(Principal principal) {
+    User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+    Profile profile = profileRepository.findByUser(user).orElseThrow();
+    return ProfileDTO.fromEntity(profile);
+}
+
+@PutMapping
+public void updateProfile(@RequestBody @Valid ProfileDTO profileDTO, Principal principal) {
+    User user = userRepository.findByUsername(principal.getName()).orElseThrow();
+    Profile profile = profileRepository.findByUser(user).orElseThrow();
+
+    profileDTO.updateEntity(profile);
+    profileRepository.save(profile);
+}
+```
+
+### 🔍 Why It’s Interesting:
+- Securely retrieves the authenticated user's data using `Principal`.
+- Prevents unauthorized access to others' profiles.
+- Uses DTO for clean separation between API model and database entity.
+
+---
+
+## Author
+
+Mahmoud Boukhelkhal  
+© 2025 – Capstone 3 – Application Development Program
