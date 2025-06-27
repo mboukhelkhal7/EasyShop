@@ -60,7 +60,7 @@ public class ShoppingCartController {
         User user = userRepository.findByUsername(principal.getName()).orElseThrow();
         Product product = productRepository.findById(productId).orElseThrow();
 
-        ShoppingCartId id = new ShoppingCartId(user.getUserId(), product.getProductId());
+        ShoppingCartId id = new ShoppingCartId(user.getUserId(), productId);
 
         ShoppingCartItem item = shoppingCartRepository.findById(id).orElse(
                 ShoppingCartItem.builder()
